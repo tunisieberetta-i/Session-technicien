@@ -2,7 +2,6 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <!-- Indispensable pour adapter l'affichage aux écrans mobiles -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Embedded Content</title>
   <style>
@@ -11,13 +10,42 @@
       padding: 0;
       width: 100%;
       height: 100%;
-      overflow: hidden; /* Empêche le double défilement sur petit écran */
+      overflow: hidden; 
+    }
+    
+    /* NOUVEAU : Style pour l'écran de chargement */
+    #ecran-chargement {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #1a1a1a; /* Fond sombre pour correspondre à votre app */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9998; /* Juste en dessous de la couche invisible */
+    }
+    
+    /* Animation pour faire tourner le logo */
+    .spinner {
+      width: 80px;
+      height: 80px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
   
-  <!-- NOUVEAU : Couche invisible qui capte le premier clic -->
+  <!-- NOUVEAU : Écran de chargement avec votre logo -->
+  <div id="ecran-chargement">
+    <img src="nom_de_votre_image.png" alt="Chargement..." class="spinner">
+  </div>
+
   <div id="couche-invisible" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999;"></div>
 
   <iframe 
@@ -29,18 +57,23 @@
   </iframe>
 
   <script>
-    // MODIFICATION : Au lieu de window.onload, on attend le premier clic sur l'écran
     const coucheInvisible = document.getElementById('couche-invisible');
+    
+    // NOUVEAU : Fait disparaître le chargement quand l'iframe a terminé de charger
+    const iframe = document.querySelector('iframe');
+    const ecranChargement = document.getElementById('ecran-chargement');
+    
+    iframe.onload = function() {
+      ecranChargement.style.display = 'none';
+    };
 
     coucheInvisible.addEventListener('click', function() {
-      // 1. Active le plein écran (autorisé car c'est déclenché par un clic humain)
       document.querySelector('iframe')
         .requestFullscreen()
         .catch((err) => {
           console.error('Error attempting to enable full-screen mode:', err.message);
         });
 
-      // 2. Fait disparaître la couche invisible pour que l'iframe soit utilisable
       coucheInvisible.style.display = 'none';
     });
   </script>
