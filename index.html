@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
+  <!-- Indispensable pour adapter l'affichage aux écrans mobiles -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Embedded Content</title>
   <style>
@@ -10,68 +11,13 @@
       padding: 0;
       width: 100%;
       height: 100%;
-      overflow: hidden; 
-    }
-    
-    /* STYLE DU CHARGEMENT (Créé entièrement en code) */
-    #ecran-chargement {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: #f8f9fa; /* Fond clair */
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 9998;
-    }
-    
-    .spinner-container {
-      position: relative;
-      width: 130px;
-      height: 130px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    /* Le cercle qui tourne */
-    .spinner-cercle {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      border: 8px dotted #555; /* Crée l'effet de points comme sur votre capture */
-      border-top-color: #000;  /* Point plus foncé en haut */
-      animation: spin 1.5s linear infinite; /* Fait tourner le cercle */
-    }
-
-    /* Le texte au centre (qui ne tourne pas) */
-    .spinner-texte {
-      position: absolute;
-      font-family: sans-serif;
-      font-size: 14px;
-      font-weight: bold;
-      color: #333;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      overflow: hidden; /* Empêche le double défilement sur petit écran */
     }
   </style>
 </head>
 <body>
   
-  <!-- NOUVEAU : Écran de chargement codé en HTML/CSS -->
-  <div id="ecran-chargement">
-    <div class="spinner-container">
-      <div class="spinner-cercle"></div>
-      <div class="spinner-texte">loading......</div>
-    </div>
-  </div>
-
+  <!-- NOUVEAU : Couche invisible qui capte le premier clic -->
   <div id="couche-invisible" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999;"></div>
 
   <iframe 
@@ -83,22 +29,18 @@
   </iframe>
 
   <script>
+    // MODIFICATION : Au lieu de window.onload, on attend le premier clic sur l'écran
     const coucheInvisible = document.getElementById('couche-invisible');
-    const iframe = document.querySelector('iframe');
-    const ecranChargement = document.getElementById('ecran-chargement');
-    
-    // Fait disparaître l'écran de chargement quand l'application Apps Script a fini de charger
-    iframe.onload = function() {
-      ecranChargement.style.display = 'none';
-    };
 
     coucheInvisible.addEventListener('click', function() {
+      // 1. Active le plein écran (autorisé car c'est déclenché par un clic humain)
       document.querySelector('iframe')
         .requestFullscreen()
         .catch((err) => {
           console.error('Error attempting to enable full-screen mode:', err.message);
         });
 
+      // 2. Fait disparaître la couche invisible pour que l'iframe soit utilisable
       coucheInvisible.style.display = 'none';
     });
   </script>
